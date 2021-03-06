@@ -1,0 +1,61 @@
+plugins {
+    id("com.android.application")
+    kotlin("android")
+    id("kotlin-android")
+}
+
+android {
+    compileSdkVersion(30)
+    buildToolsVersion("30.0.3")
+
+    defaultConfig {
+        applicationId = "com.leozhi.shinian"
+        minSdkVersion(23)
+        targetSdkVersion(30)
+        versionCode = 1
+        versionName = "1.0"
+    }
+
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+    buildFeatures {
+        viewBinding = true
+    }
+}
+
+dependencies {
+    implementation("androidx.activity:activity:1.3.0-alpha02")
+    implementation("androidx.appcompat:appcompat:1.2.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
+    implementation("androidx.core:core-ktx:1.3.2")
+    implementation("androidx.fragment:fragment:1.3.0")
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
+    implementation("com.google.android.material:material:1.2.1")
+
+    // Navigation
+    implementation("androidx.navigation:navigation-fragment-ktx:2.3.2")
+    implementation("androidx.navigation:navigation-ui-ktx:2.3.2")
+    implementation("androidx.lifecycle:lifecycle-common-java8:2.3.0-rc01")
+    // LiveData
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.0-rc01")
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0")
+    // Koin
+    implementation("org.koin:koin-core:2.2.2")
+    implementation("org.koin:koin-androidx-viewmodel:2.2.2")
+
+    implementation("com.hi-dhl:binding:1.0.7")
+    implementation(project(mapOf("path" to ":common")))
+
+}
