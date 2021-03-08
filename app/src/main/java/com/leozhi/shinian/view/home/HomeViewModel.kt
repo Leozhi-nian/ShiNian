@@ -3,11 +3,9 @@ package com.leozhi.shinian.view.home
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.leozhi.shinian.Preference
 import com.leozhi.shinian.model.bean.FileBean
 import com.leozhi.shinian.model.repo.HomeRepository
 import com.leozhi.shinian.util.FileUtil
-import com.leozhi.shinian.util.LogUtil
 
 class HomeViewModel(private val repo: HomeRepository) : ViewModel() {
     private val pathLiveData = MutableLiveData<String>()

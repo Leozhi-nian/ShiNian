@@ -85,6 +85,14 @@ class HomeFragment : Fragment() {
                 }
             }
         })
+
+        // 监听长按事件
+        adapter.setOnItemLongClickListener(object : FileAdapter.OnItemLongClickListener {
+            override fun onItemLongClick(position: Int): Boolean {
+                "长按事件".showToast(MyApp.context)
+                return true
+            }
+        })
     }
 
     override fun onResume() {
