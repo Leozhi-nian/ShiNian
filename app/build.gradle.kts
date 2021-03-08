@@ -16,12 +16,32 @@ android {
         versionName = "1.0"
     }
 
+    signingConfigs {
+        register("release") {
+            keyAlias = "leozhi"
+            keyPassword = "19980819"
+            storeFile = file("file:///home/leozhi/Leozhi/Code/Android/KeyStore/aivoice.jks")
+            storePassword = "19980819"
+        }
+    }
+
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
+
+    android.applicationVariants.all {
+        val buildType: String = this.buildType.name
+        outputs.all {
+            if (this is com.android.build.gradle.internal.api.ApkVariantOutputImpl) {
+                this.outputFileName = "拾念_V${defaultConfig.versionName}_$buildType.apk"
+            }
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -57,5 +77,4 @@ dependencies {
 
     implementation("com.hi-dhl:binding:1.0.7")
     implementation(project(mapOf("path" to ":common")))
-
 }

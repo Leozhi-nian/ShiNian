@@ -13,16 +13,17 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.hi.dhl.binding.viewbind
 import com.leozhi.common.showToast
-import com.leozhi.shinian.MyApp
+import com.leozhi.shinian.Preference
 import com.leozhi.shinian.R
 import com.leozhi.shinian.databinding.ActivityMainBinding
 import com.leozhi.shinian.util.FileUtil
-import com.leozhi.shinian.util.LogUtil
 import com.leozhi.shinian.util.PermissionUtil
-import java.io.File
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
     private val binding: ActivityMainBinding by viewbind()
+    val viewModel: MainViewModel by viewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -36,36 +37,30 @@ class MainActivity : AppCompatActivity() {
             // 获取访问所有文件的权限
             PermissionUtil.filesAccessPermission(this, launcher)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager()) {
-                val rootPath = FileUtil.getRootPath()
-                rootPath?.showToast(this)
-                if (rootPath != null) {
-                    val rootFile = File(rootPath)
-                    val files = rootFile.listFiles()
-                    if (files == null) {
-                        LogUtil.d("MainActivity", "空目录")
-                    } else {
-                        for (file in files) {
-                            LogUtil.d("MainActivity", file.absolutePath)
-                        }
-                    }
-                }
+                "按钮被点击了".showToast(this)
             }
         }
     }
 
-    private val launcher = registerForActivityResult(object : ActivityResultContract<Any, String>() {
+    // 用于 Android 11 以下系统获取权限后回调
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            1 -> Preference.rootPath = FileUtil.getRootPath()
+        }
+    }
+
+    // 用于 Android 11 获取权限后回调
+    private val contract = object : ActivityResultContract<Any, Any>() {
         @RequiresApi(Build.VERSION_CODES.R)
         override fun createIntent(context: Context, input: Any): Intent {
             return Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
         }
 
-        @RequiresApi(Build.VERSION_CODES.R)
-        override fun parseResult(resultCode: Int, intent: Intent?): String {
-            return if (!Environment.isExternalStorageManager()) {
-                "存储权限获取失败"
-            } else {
-                "存储权限获取成功"
-            }
-        }
-    }) { it.showToast(MyApp.context) }
+        override fun parseResult(resultCode: Int, intent: Intent?) {}
+    }
+
+    private val launcher = registerForActivityResult(contract) {
+        Preference.rootPath = FileUtil.getRootPath()
+    }
 }

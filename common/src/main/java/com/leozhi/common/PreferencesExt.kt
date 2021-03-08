@@ -18,6 +18,8 @@ class Preference<T>(
     private val prefs by lazy {
         context.getSharedPreferences(prefName, Context.MODE_PRIVATE)
     }
+
+    @Suppress("UNCHECKED_CAST")
     override fun getValue(thisRef: Any?, property: KProperty<*>): T {
         return when (default) {
             is Int -> prefs.getInt(name, default)

@@ -2,6 +2,7 @@ package com.leozhi.shinian.di
 
 import com.leozhi.shinian.model.repo.HomeRepository
 import com.leozhi.shinian.model.repo.MineRepository
+import com.leozhi.shinian.view.MainViewModel
 import com.leozhi.shinian.view.home.HomeViewModel
 import com.leozhi.shinian.view.mine.MineViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -12,6 +13,7 @@ import org.koin.dsl.module
  * @date 21-2-27
  */
 val viewModelModule = module {
+    viewModel { MainViewModel(get()) }
     viewModel { HomeViewModel(get()) }
     viewModel { MineViewModel(get()) }
 }

@@ -3,6 +3,7 @@ package com.leozhi.shinian.util
 import android.os.Build
 import android.os.Environment
 import com.leozhi.shinian.MyApp
+import java.io.File
 
 /**
  * @author leozhi
@@ -13,9 +14,9 @@ object FileUtil {
      * @return rootPath 根目录路径
      * 获取根目录的路径
      */
-    fun getRootPath(): String? {
+    fun getRootPath(): String {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
-            return null
+            return ""
         }
         var appRootDir = MyApp.context.getExternalFilesDir(null)!!
         do {
