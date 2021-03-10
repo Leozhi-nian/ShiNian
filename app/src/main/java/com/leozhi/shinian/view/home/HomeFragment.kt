@@ -2,21 +2,22 @@ package com.leozhi.shinian.view.home
 
 import android.os.Bundle
 import android.view.*
+import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hi.dhl.binding.viewbind
-import com.leozhi.common.convert
 import com.leozhi.common.showToast
 import com.leozhi.shinian.MyApp
 import com.leozhi.shinian.Preference
 import com.leozhi.shinian.R
 import com.leozhi.shinian.adapter.FileAdapter
 import com.leozhi.shinian.databinding.FragmentHomeBinding
-import com.leozhi.shinian.model.bean.FileBean
+import com.leozhi.shinian.util.DisplayUtil
 import com.leozhi.shinian.util.FileUtil
-import com.leozhi.shinian.util.LogUtil
 import com.leozhi.shinian.widget.FreePopupMenu
 import com.leozhi.shinian.widget.OnMenuItemClickListener
 import org.koin.androidx.viewmodel.ViewModelOwner
@@ -46,7 +47,7 @@ class HomeFragment : Fragment() {
                     return
                 }
                 if (viewModel.getCurrentPath() != Preference.rootPath) {
-                    viewModel.getListFiles(File(viewModel.getCurrentPath()).parent!!)
+                    viewModel.setCurrentPath(File(viewModel.getCurrentPath()).parent!!)
                     // 获取父目录之前所在位置和偏移量
                     viewModel.positionAndOffset = viewModel.removePositionAndOffset()
                 } else {
@@ -69,11 +70,55 @@ class HomeFragment : Fragment() {
         freePopupMenu.inflate(R.menu.popup_menu_file_item)
         freePopupMenu.setOnMenuItemClickListener(object : OnMenuItemClickListener {
             override fun onMenuItemClick(item: MenuItem) {
+                val file = File(viewModel.fileList[viewModel.checkedItemPosition].path)
                 when (item.itemId) {
                     R.id.popup_menu_copy -> item.title.toString().showToast(MyApp.context)
                     R.id.popup_menu_move -> item.title.toString().showToast(MyApp.context)
-                    R.id.popup_menu_rename -> item.title.toString().showToast(MyApp.context)
-                    R.id.popup_menu_delete -> item.title.toString().showToast(MyApp.context)
+                    R.id.popup_menu_rename -> {
+                        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_text, LinearLayout(context))
+                        val editText: EditText = dialogView.findViewById(R.id.edit_text)
+                        editText.setText(file.name)
+                        editText.text?.let { editText.setSelection(it.length) }
+                        val dialog = AlertDialog.Builder(requireActivity())
+                            .setTitle(item.title.toString())
+                            .setView(dialogView)
+                            .setPositiveButton("确定", null)
+                            .setNegativeButton("取消") { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .show()
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                            if (editText.text.isNullOrEmpty()) {
+                                "请输入文件名！".showToast(MyApp.context)
+                            } else {
+                                val newFile = File("${file.parent!!}/${editText.text}")
+                                if (newFile != file && FileUtil.isExist(file.parentFile!!, newFile)) {
+                                    "文件已存在".showToast(MyApp.context)
+                                } else {
+                                    FileUtil.renameFile(file, newFile)
+                                    dialog.dismiss()
+                                    viewModel.setCurrentPath(viewModel.getCurrentPath())
+                                }
+                            }
+                        }
+                    }
+                    R.id.popup_menu_delete -> {
+                        AlertDialog.Builder(requireActivity())
+                            .setTitle(item.title.toString())
+                            .setMessage("是否删除${file.name}？")
+                            .setPositiveButton("确定") { _, _ ->
+                                if (file.isDirectory) {
+                                    FileUtil.deleteDirectory(file)
+                                } else {
+                                    file.delete()
+                                }
+                                viewModel.setCurrentPath(viewModel.getCurrentPath())
+                            }
+                            .setNegativeButton("取消") { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .show()
+                    }
                     R.id.popup_menu_property -> item.title.toString().showToast(MyApp.context)
                 }
                 viewModel.popupMenuIsShowing = false
@@ -81,17 +126,10 @@ class HomeFragment : Fragment() {
         })
 
         // 观察 LiveData 数据变化
-        viewModel.fileLiveData.observe(requireActivity()) { result ->
+        viewModel.getListFiles.observe(requireActivity()) { result ->
             viewModel.fileList.clear()
-            result?.let {
-                // 将文件数组映射为 FileBean 集合
-                FileUtil.filterListFiles(it).map { file ->
-                    FileBean(file.name, file.path, file.length().convert(), file.lastModified())
-                }
-            }?.let {
-                viewModel.fileList.addAll(it)
-                adapter.submitList(it)
-            }
+            adapter.submitList(result)
+            viewModel.fileList.addAll(result)
         }
     }
 
@@ -124,14 +162,13 @@ class HomeFragment : Fragment() {
         // 监听点击事件
         adapter.setOnItemClickListener(object : FileAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                LogUtil.d("MainActivity", "onClick")
                 if (viewModel.itemClickable) {
                     val onClickPath = viewModel.fileList[position].path
                     // 判断点击的是文件还是目录
                     if (File(onClickPath).isDirectory) {
-                        viewModel.getListFiles(onClickPath)
+                        viewModel.setCurrentPath(onClickPath)
                         // 将当前目录所在的位置和偏移量存入栈中
-                        viewModel.addPositionAndOffset(getPositionAndOffset())
+                        viewModel.addPositionAndOffset(DisplayUtil.getPositionAndOffset(layoutManager))
                         // 设置子目录初始化时所在的位置和偏移量分别为0，0
                         viewModel.positionAndOffset = Pair(0, 0)
                     } else {
@@ -147,6 +184,7 @@ class HomeFragment : Fragment() {
                 val (x, y) = viewModel.onLongClickCoordinate
                 freePopupMenu.show(layoutManager.findViewByPosition(position)!!, x, y)
                 viewModel.recyclerViewScrollable = false
+                viewModel.checkedItemPosition = position
                 return true
             }
         })
@@ -175,27 +213,16 @@ class HomeFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         if (viewModel.getCurrentPath().isEmpty()) FileUtil.getRootPath() else viewModel.getCurrentPath().let { path ->
-            viewModel.getListFiles(path)
+            viewModel.setCurrentPath(path)
         }
     }
 
     override fun onPause() {
         super.onPause()
-        viewModel.positionAndOffset = getPositionAndOffset()
-    }
-
-    /**
-     * 获取显示的第一个 item 的位置和相对于 top 的偏移量
-     *
-     * @return (position, offset) 位置，偏移量
-     */
-    private fun getPositionAndOffset(): Pair<Int, Int> {
-        var res = Pair(0, 0)
-        val layoutManager = binding.recyclerview.layoutManager as LinearLayoutManager
-        val firstView = layoutManager.getChildAt(0)
-        firstView?.let {
-            res = Pair(layoutManager.getPosition(firstView), firstView.top - 28)
+        viewModel.positionAndOffset = DisplayUtil.getPositionAndOffset(layoutManager)
+        if (freePopupMenu.isShowing) {
+            freePopupMenu.dismiss()
+            viewModel.popupMenuIsShowing = false
         }
-        return res
     }
 }

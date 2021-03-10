@@ -40,8 +40,8 @@
             android:layout_height="match_parent"
             android:layout_marginTop="?attr/actionBarSize"
             android:clipToPadding="false"
-            android:paddingTop="4dp"
-            android:paddingBottom="60dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="62dp"
             tools:listitem="@layout/layout_file_item" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

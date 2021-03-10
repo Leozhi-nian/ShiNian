@@ -10,6 +10,7 @@ import java.util.*
  * @author leozhi
  * @date 2021/3/7
  */
+@Suppress("unused")
 object FileUtil {
     /**
      * @return rootPath 根目录路径
@@ -26,13 +27,42 @@ object FileUtil {
         return appRootDir.absolutePath
     }
 
-    fun filterListFiles(
-        files: Array<File>
-    ): List<File> {
-        return files.asSequence().filterNot {
-            it.isHidden
-        }.sortedWith { o1, o2 ->
-            o1.name.toLowerCase(Locale.ROOT).compareTo(o2.name.toLowerCase(Locale.ROOT))
-        }.toList()
+    /**
+     * 按照文件名正序排列
+     */
+    val sortedByName = Comparator<File> { o1, o2 ->
+        o1.name.toLowerCase(Locale.ROOT).compareTo(o2.name.toLowerCase(Locale.ROOT))
+    }
+
+    /**
+     * 按照文件名逆序排列
+     */
+    val sortedByNameDescending = Comparator<File> { o1, o2 ->
+        o2.name.toLowerCase(Locale.ROOT).compareTo(o1.name.toLowerCase(Locale.ROOT))
+    }
+
+    fun deleteDirectory(dir: File) {
+        val files = dir.listFiles()
+        if (files == null) {
+            dir.delete()
+            return
+        }
+        for (file in files) {
+            if (file.isFile) {
+                file.delete()
+            } else {
+                deleteDirectory(file)
+            }
+        }
+        dir.delete()
+    }
+
+    fun renameFile(oldFile: File, newFile: File): File {
+        oldFile.renameTo(newFile)
+        return newFile
+    }
+
+    fun isExist(parent: File, child: File): Boolean {
+        return parent.listFiles()?.contains(child) ?: false
     }
 }

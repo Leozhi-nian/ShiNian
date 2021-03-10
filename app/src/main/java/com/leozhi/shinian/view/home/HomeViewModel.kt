@@ -22,8 +22,9 @@ class HomeViewModel(private val repo: HomeRepository) : ViewModel() {
     var popupMenuIsShowing = false
     var recyclerViewScrollable = true
     var itemClickable = true
+    var checkedItemPosition = 0
 
-    val fileLiveData = Transformations.switchMap(pathLiveData) { path ->
+    val getListFiles = Transformations.switchMap(pathLiveData) { path ->
         repo.getListFiles(path)
     }
 
@@ -32,7 +33,7 @@ class HomeViewModel(private val repo: HomeRepository) : ViewModel() {
      * 通过改变 pathLiveData 的值，fileLiveData 识别到变化也会作出相应变化
      * @param path 给定目录
       */
-    fun getListFiles(path: String) {
+    fun setCurrentPath(path: String) {
         pathLiveData.value = path
     }
 

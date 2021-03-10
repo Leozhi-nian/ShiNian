@@ -15,11 +15,14 @@ data class FileBean(
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<FileBean>() {
             // 判断两个Objects 是否代表同一个item对象
-            override fun areItemsTheSame(oldItem: FileBean, newItem: FileBean): Boolean =
-                oldItem.path == newItem.path
+            override fun areItemsTheSame(oldItem: FileBean, newItem: FileBean): Boolean {
+                return oldItem.path == newItem.path
+            }
 
             // 判断两个Objects 是否有相同的内容。
-            override fun areContentsTheSame(oldItem: FileBean, newItem: FileBean): Boolean = true
+            override fun areContentsTheSame(oldItem: FileBean, newItem: FileBean): Boolean {
+                return oldItem != newItem
+            }
         }
     }
 }
