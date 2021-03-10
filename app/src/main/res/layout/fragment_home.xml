@@ -20,7 +20,7 @@
 
             <androidx.appcompat.widget.Toolbar
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize" >
+                android:layout_height="?attr/actionBarSize">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -40,7 +40,9 @@
             android:layout_height="match_parent"
             android:layout_marginTop="?attr/actionBarSize"
             android:clipToPadding="false"
-            android:paddingBottom="60dp" />
+            android:paddingTop="4dp"
+            android:paddingBottom="60dp"
+            tools:listitem="@layout/layout_file_item" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

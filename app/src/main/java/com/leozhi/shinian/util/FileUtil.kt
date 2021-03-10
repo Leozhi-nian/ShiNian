@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Environment
 import com.leozhi.shinian.MyApp
 import java.io.File
+import java.util.*
 
 /**
  * @author leozhi
@@ -23,5 +24,15 @@ object FileUtil {
             appRootDir = appRootDir.parentFile!!
         } while (appRootDir.absolutePath.contains("/Android"))
         return appRootDir.absolutePath
+    }
+
+    fun filterListFiles(
+        files: Array<File>
+    ): List<File> {
+        return files.asSequence().filterNot {
+            it.isHidden
+        }.sortedWith { o1, o2 ->
+            o1.name.toLowerCase(Locale.ROOT).compareTo(o2.name.toLowerCase(Locale.ROOT))
+        }.toList()
     }
 }

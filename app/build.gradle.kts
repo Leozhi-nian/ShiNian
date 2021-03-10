@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     kotlin("android")
-    id("kotlin-android")
+    // id("kotlin-android")
 }
 
 android {
@@ -26,7 +26,7 @@ android {
     }
 
     buildTypes {
-        getByName("release") {
+        getByName("debug") {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("release")
@@ -74,7 +74,13 @@ dependencies {
     // Koin
     implementation("org.koin:koin-core:2.2.2")
     implementation("org.koin:koin-androidx-viewmodel:2.2.2")
+    // 协程
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2")
 
     implementation("com.hi-dhl:binding:1.0.7")
     implementation(project(mapOf("path" to ":common")))
+    implementation("androidx.recyclerview:recyclerview:1.2.0-beta01")
+
+    implementation("com.github.jokar:FloatMenu:0.0.3")
 }

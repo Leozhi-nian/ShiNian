@@ -26,6 +26,7 @@ class FileAdapter : ListAdapter<FileBean, ViewHolder>(FileBean.DIFF_CALLBACK) {
         return ViewHolder(LayoutInflater.from(parent.context).inflate(viewType, parent, false))
     }
 
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindData(getItem(position))
         holder.itemView.setOnClickListener {
@@ -40,7 +41,7 @@ class FileAdapter : ListAdapter<FileBean, ViewHolder>(FileBean.DIFF_CALLBACK) {
         return R.layout.layout_file_item
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val binding: LayoutFileItemBinding by viewbind()
         fun bindData(data: FileBean?) {
             binding.apply {

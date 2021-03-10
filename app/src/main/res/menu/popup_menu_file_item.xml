@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/popup_menu_copy"
+        android:title="@string/popup_menu_copy_title" />
+    <item
+        android:id="@+id/popup_menu_move"
+        android:title="@string/popup_menu_move_title" />
+    <item
+        android:id="@+id/popup_menu_rename"
+        android:title="@string/popup_menu_rename_title" />
+
+    <item
+        android:id="@+id/popup_menu_delete"
+        android:title="@string/popup_menu_delete_title" />
+
+    <item
+        android:id="@+id/popup_menu_property"
+        android:title="@string/popup_menu_property" />
+
+</menu>

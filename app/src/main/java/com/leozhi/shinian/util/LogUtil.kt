@@ -44,4 +44,11 @@ object LogUtil {
             Log.e(tag, msg)
         }
     }
+
+    fun <T> timer(tag: String, block: () -> T): T {
+        val start = System.nanoTime()
+        val res = block()
+        Log.d(tag, "${System.nanoTime() - start} ns")
+        return res
+    }
 }

@@ -6,11 +6,22 @@ import androidx.lifecycle.ViewModel
 import com.leozhi.shinian.model.bean.FileBean
 import com.leozhi.shinian.model.repo.HomeRepository
 import com.leozhi.shinian.util.FileUtil
+import java.util.*
+import kotlin.collections.ArrayList
 
 class HomeViewModel(private val repo: HomeRepository) : ViewModel() {
     private val pathLiveData = MutableLiveData<String>()
-    private val positionLiveData = MutableLiveData<Pair<Int, Int>>()
+    private val positionAndOffsetLiveData: MutableLiveData<Stack<Pair<Int, Int>>> by lazy {
+        MutableLiveData<Stack<Pair<Int, Int>>>().also {
+            it.value = Stack<Pair<Int, Int>>()
+        }
+    }
     val fileList = ArrayList<FileBean>()
+    var positionAndOffset = Pair(0, 0)
+    var onLongClickCoordinate = Pair(0, 0)
+    var popupMenuIsShowing = false
+    var recyclerViewScrollable = true
+    var itemClickable = true
 
     val fileLiveData = Transformations.switchMap(pathLiveData) { path ->
         repo.getListFiles(path)
@@ -33,11 +44,17 @@ class HomeViewModel(private val repo: HomeRepository) : ViewModel() {
         return pathLiveData.value ?: FileUtil.getRootPath()
     }
 
-    fun setPosition(value: Pair<Int, Int>) {
-        positionLiveData.value = value
+    /**
+     * 向栈中添加位置和偏移量的数对
+     */
+    fun addPositionAndOffset(pair: Pair<Int, Int>) {
+        positionAndOffsetLiveData.value!!.push(pair)
     }
 
-    fun getPosition(): Pair<Int, Int> {
-        return positionLiveData.value ?: Pair(0, 0)
+    /**
+     * 从栈中移除栈顶的位置和偏移量的数对
+     */
+    fun removePositionAndOffset(): Pair<Int, Int> {
+        return positionAndOffsetLiveData.value!!.pop()
     }
 }
