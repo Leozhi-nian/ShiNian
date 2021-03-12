@@ -13,7 +13,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.hi.dhl.binding.viewbind
 import com.leozhi.common.showToast
-import com.leozhi.shinian.Preference
 import com.leozhi.shinian.R
 import com.leozhi.shinian.databinding.ActivityMainBinding
 import com.leozhi.shinian.util.FileUtil
@@ -22,7 +21,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
     private val binding: ActivityMainBinding by viewbind()
-    val viewModel: MainViewModel by viewModel()
+    private val viewModel: MainViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +45,7 @@ class MainActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
-            1 -> Preference.rootPath = FileUtil.getRootPath()
+            1 -> viewModel.saveRootPath(FileUtil.getRootPath())
         }
     }
 
@@ -61,6 +60,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val launcher = registerForActivityResult(contract) {
-        Preference.rootPath = FileUtil.getRootPath()
+        viewModel.saveRootPath(FileUtil.getRootPath())
     }
 }

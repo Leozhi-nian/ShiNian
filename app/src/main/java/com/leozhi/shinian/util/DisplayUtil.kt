@@ -24,6 +24,6 @@ object DisplayUtil {
      * @return (position, offset) 位置，偏移量
      */
     fun getPositionAndOffset(manager: LinearLayoutManager): Pair<Int, Int> {
-        return manager.getChildAt(0)?.let { Pair(manager.getPosition(it), it.top - 28) } ?: Pair(0, 0)
+        return manager.getChildAt(0)?.let { Pair(manager.getPosition(it), it.top - 34) } ?: Pair(0, 0)
     }
 }

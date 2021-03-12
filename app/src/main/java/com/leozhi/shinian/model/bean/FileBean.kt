@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.DiffUtil
 data class FileBean(
     var name: String,
     val path: String,
+    val childrenCount: Int,
+    val fileType: FileType,
     var size: String,
     var modifyDate: Long
 ) {

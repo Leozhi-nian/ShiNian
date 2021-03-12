@@ -14,6 +14,7 @@ class MyApp : Application() {
     companion object {
         @SuppressLint("StaticFieldLeak")
         lateinit var context: Context
+        const val TAG = "ShiNian"
     }
     override fun onCreate() {
         super.onCreate()

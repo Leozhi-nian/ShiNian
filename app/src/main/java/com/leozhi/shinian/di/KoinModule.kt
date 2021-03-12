@@ -1,6 +1,7 @@
 package com.leozhi.shinian.di
 
 import com.leozhi.shinian.model.repo.HomeRepository
+import com.leozhi.shinian.model.repo.MainRepository
 import com.leozhi.shinian.model.repo.MineRepository
 import com.leozhi.shinian.view.MainViewModel
 import com.leozhi.shinian.view.home.HomeViewModel
@@ -19,6 +20,7 @@ val viewModelModule = module {
 }
 
 val repositoryModule = module {
+    single { MainRepository() }
     single { HomeRepository() }
     single { MineRepository() }
 }

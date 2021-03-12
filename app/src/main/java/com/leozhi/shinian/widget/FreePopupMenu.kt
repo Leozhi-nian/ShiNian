@@ -39,8 +39,8 @@ class FreePopupMenu(private val context: Context) : PopupWindow(context) {
     private var mMenuWidth: Int = DisplayUtil.dip2px(context, DEFAULT_MENU_WIDTH)
 
     init {
-        contentView = mInflater.inflate(R.layout.layout_float_menu, LinearLayout(context))
-        mRecyclerView = contentView.findViewById(R.id.recyclerView)
+        contentView = mInflater.inflate(R.layout.layout_free_popup_menu, LinearLayout(context))
+        mRecyclerView = contentView.findViewById(R.id.recyclerview)
         mRecyclerView.layoutManager = LinearLayoutManager(context)
         mRecyclerView.adapter = mMenuAdapter
         width = mMenuWidth
@@ -93,7 +93,7 @@ class FreePopupMenu(private val context: Context) : PopupWindow(context) {
         }
         mMenuAdapter.notifyItemRangeChanged(0, size)
         // show
-        val menuHeight = com.github.jokar.floatmenu.DisplayUtil.dip2px(context, DEFAULT_ITEM_HEIGHT * mMenuItems.size)
+        val menuHeight = DisplayUtil.dip2px(context, DEFAULT_ITEM_HEIGHT * mMenuItems.size)
         if (x <= mScreenPoint.x / 2) {
             if (y + menuHeight < mScreenPoint.y) {
                 animationStyle = R.style.top_for_left

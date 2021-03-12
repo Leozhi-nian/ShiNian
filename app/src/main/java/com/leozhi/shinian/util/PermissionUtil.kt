@@ -21,14 +21,6 @@ object PermissionUtil {
      * 获取所有文件访问权限
      */
     fun filesAccessPermission(context: Context, launcher: ActivityResultLauncher<Any>) {
-        fun check(vararg permissions: String): Boolean {
-            var res = true
-            for (permission in permissions) {
-                res = res && context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
-            }
-            return res
-        }
-
         val activity = context as Activity
         // 判断 Android 版本是否为 R （Android 11）以上且用户未被授予权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -43,11 +35,27 @@ object PermissionUtil {
             }
         } else {
             val array = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
-            val isGranted = check(*array)
-
-            if (!isGranted) {
+            if (!hasStoragePermission(context)) {
                 activity.requestPermissions(array, 1)
             }
         }
+    }
+
+    fun hasStoragePermission(context: Context): Boolean {
+        fun check(vararg permissions: String): Boolean {
+            var res = true
+            for (permission in permissions) {
+                res = res && context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
+            }
+            return res
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager()) {
+            return true
+        }
+        val array = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (check(*array)) {
+            return true
+        }
+        return false
     }
 }

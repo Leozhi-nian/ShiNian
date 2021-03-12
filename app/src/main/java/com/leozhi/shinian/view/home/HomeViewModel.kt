@@ -1,5 +1,6 @@
 package com.leozhi.shinian.view.home
 
+import android.graphics.Point
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
@@ -10,23 +11,19 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class HomeViewModel(private val repo: HomeRepository) : ViewModel() {
-    private val pathLiveData = MutableLiveData<String>()
-    private val positionAndOffsetLiveData: MutableLiveData<Stack<Pair<Int, Int>>> by lazy {
-        MutableLiveData<Stack<Pair<Int, Int>>>().also {
-            it.value = Stack<Pair<Int, Int>>()
-        }
-    }
+    private val currentPathLiveData by lazy { MutableLiveData<String>() }
+    private val positionAndOffsetStackLiveData by lazy { MutableLiveData(Stack<Pair<Int, Int>>()) }
+
+    val getListFiles = Transformations.switchMap(currentPathLiveData) { path -> repo.getListFiles(path) }
+
     val fileList = ArrayList<FileBean>()
     var positionAndOffset = Pair(0, 0)
-    var onLongClickCoordinate = Pair(0, 0)
+    var onLongClickCoordinate = Point(0, 0)
     var popupMenuIsShowing = false
     var recyclerViewScrollable = true
     var itemClickable = true
     var checkedItemPosition = 0
 
-    val getListFiles = Transformations.switchMap(pathLiveData) { path ->
-        repo.getListFiles(path)
-    }
 
     /**
      * 获取目录下的子目录或文件
@@ -34,7 +31,7 @@ class HomeViewModel(private val repo: HomeRepository) : ViewModel() {
      * @param path 给定目录
       */
     fun setCurrentPath(path: String) {
-        pathLiveData.value = path
+        currentPathLiveData.value = path
     }
 
     /**
@@ -42,20 +39,20 @@ class HomeViewModel(private val repo: HomeRepository) : ViewModel() {
      * @return 当前目录
      */
     fun getCurrentPath(): String {
-        return pathLiveData.value ?: FileUtil.getRootPath()
+        return currentPathLiveData.value ?: FileUtil.getRootPath()
     }
 
     /**
      * 向栈中添加位置和偏移量的数对
      */
     fun addPositionAndOffset(pair: Pair<Int, Int>) {
-        positionAndOffsetLiveData.value!!.push(pair)
+        positionAndOffsetStackLiveData.value!!.push(pair)
     }
 
     /**
      * 从栈中移除栈顶的位置和偏移量的数对
      */
     fun removePositionAndOffset(): Pair<Int, Int> {
-        return positionAndOffsetLiveData.value!!.pop()
+        return positionAndOffsetStackLiveData.value!!.pop()
     }
 }

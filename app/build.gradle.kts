@@ -81,6 +81,4 @@ dependencies {
     implementation("com.hi-dhl:binding:1.0.7")
     implementation(project(mapOf("path" to ":common")))
     implementation("androidx.recyclerview:recyclerview:1.2.0-beta01")
-
-    implementation("com.github.jokar:FloatMenu:0.0.3")
 }

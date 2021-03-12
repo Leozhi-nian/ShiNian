@@ -10,6 +10,7 @@ import com.leozhi.shinian.R
 import com.leozhi.shinian.adapter.FileAdapter.ViewHolder
 import com.leozhi.shinian.databinding.LayoutFileItemBinding
 import com.leozhi.shinian.model.bean.FileBean
+import com.leozhi.shinian.model.bean.FileType
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -43,12 +44,12 @@ class FileAdapter : ListAdapter<FileBean, ViewHolder>(FileBean.DIFF_CALLBACK) {
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val binding: LayoutFileItemBinding by viewbind()
-        fun bindData(data: FileBean?) {
+        fun bindData(fileBean: FileBean?) {
             binding.apply {
-                data?.let { it ->
-                    fileName.text = it.name
-                    fileSize.text = it.size
-                    fileDate.text = it.modifyDate.let { date ->
+                fileBean?.apply {
+                    fileName.text = name
+                    fileSize.text = if (fileType == FileType.Directory) "$childrenCount 项" else size
+                    fileDate.text = modifyDate.let { date ->
                         SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.SIMPLIFIED_CHINESE).format(date)
                     }
                 }

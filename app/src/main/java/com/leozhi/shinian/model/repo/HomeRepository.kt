@@ -1,9 +1,11 @@
 package com.leozhi.shinian.model.repo
 
 import androidx.lifecycle.liveData
-import com.leozhi.common.convert
 import com.leozhi.shinian.model.bean.FileBean
 import com.leozhi.shinian.util.FileUtil
+import com.leozhi.shinian.util.FileUtil.childrenCount
+import com.leozhi.shinian.util.FileUtil.sizeConvert
+import com.leozhi.shinian.util.FileUtil.type
 import kotlinx.coroutines.Dispatchers
 import java.io.File
 import java.util.*
@@ -18,13 +20,16 @@ class HomeRepository {
         val fileBeanList = ArrayList<FileBean>()
         File(path).apply {
             if (isDirectory) {
-                listFiles()?.sortedWith(comparator)?.map { file ->
-                    if (!file.isHidden) {
+                listFiles()?.filterNot { it.isHidden }?.sortedWith(comparator).let { files ->
+                    files?.forEach { file ->
                         val fileBean = FileBean(
                             name = file.name,
                             path = file.absolutePath,
-                            size = file.length().convert(),
-                            modifyDate = file.lastModified())
+                            childrenCount = file.childrenCount(),
+                            fileType = file.type(),
+                            size = file.sizeConvert(),
+                            modifyDate = file.lastModified()
+                        )
                         fileBeanList.add(fileBean)
                     }
                 }

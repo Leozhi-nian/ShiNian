@@ -1,7 +1,6 @@
 package com.leozhi.common
 
 import android.content.Context
-import java.lang.IllegalArgumentException
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
